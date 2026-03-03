@@ -5,8 +5,8 @@ header('Access-Control-Allow-Methods: POST');
 header('Access-Control-Allow-Headers: Content-Type');
 
 // YAHAN APNA SUPABASE URL AUR KEY DAALO
-$supabase_url = 'https://your-project.supabase.co';
-$supabase_key = 'sb_secret_XHED4*********'; // secret key
+$supabase_url = 'https://nysosgrunimtuqsebtzx.supabase.co';
+$supabase_key = 'sb_secret_XHED4mR0dfltAkfuZceEvA_nbhnCgiE'; // secret key
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user_key = isset($_POST['user_key']) ? $_POST['user_key'] : '';
