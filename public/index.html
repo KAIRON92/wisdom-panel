@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Wisdom Panel</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            width: 450px;
+        }
+        h2 { text-align: center; color: #1a1a2e; margin-bottom: 30px; }
+        input, button {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+        input { border: 2px solid #ddd; }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            display: none;
+        }
+        .success { background: #d4edda; color: #155724; display: block; }
+        .error { background: #f8d7da; color: #721c24; display: block; }
+        .features { display: none; margin-top: 30px; }
+        .feature {
+            margin: 10px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="loginContainer">
+        <h2>⚡ WISDOM PANEL ⚡</h2>
+        <input type="text" id="userKey" placeholder="Enter License Key">
+        <button onclick="login()">LOGIN</button>
+        <div class="message" id="message"></div>
+    </div>
+
+    <div class="container" id="featuresContainer" style="display: none;">
+        <h2>⚡ FEATURES ⚡</h2>
+        <div id="featuresList"></div>
+    </div>
+
+    <script>
+    function getDeviceId() {
+        let deviceId = localStorage.getItem('device_id');
+        if (!deviceId) {
+            deviceId = 'DEV_' + Math.random().toString(36).substring(2, 15);
+            localStorage.setItem('device_id', deviceId);
+        }
+        return deviceId;
+    }
+
+    async function login() {
+        const key = document.getElementById('userKey').value.trim();
+        if (!key) {
+            showMessage('Enter key', 'error');
+            return;
+        }
+
+        const deviceId = getDeviceId();
+
+        try {
+            const response = await fetch('/api/login.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'user_key=' + encodeURIComponent(key) + '&device_id=' + encodeURIComponent(deviceId)
+            });
+            
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                showMessage(data.message, 'success');
+                setTimeout(() => {
+                    document.getElementById('loginContainer').style.display = 'none';
+                    document.getElementById('featuresContainer').style.display = 'block';
+                }, 1000);
+            } else if (data.status === 'device_mismatch') {
+                showMessage(data.message, 'error');
+            } else {
+                showMessage(data.message, 'error');
+            }
+        } catch (error) {
+            showMessage('Connection error', 'error');
+        }
+    }
+
+    function showMessage(text, type) {
+        const msg = document.getElementById('message');
+        msg.textContent = text;
+        msg.className = 'message ' + type;
+    }
+    </script>
+</body>
+</html>
